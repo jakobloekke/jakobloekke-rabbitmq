@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "amqp": {
+      "version": "0.2.4",
+      "dependencies": {
+        "lodash": {
+          "version": "1.3.1"
+        }
+      }
+    }
+  }
+}
