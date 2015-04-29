@@ -2,6 +2,9 @@
 AMQP-client for Meteor.js
 
 Exposes a global ```RabbitMQ``` object that you can interact with.
+
+# Usage
+
 The ```RabbitMQ``` object caches your connection and exchanges so you avoid opening multiple connections – which is an issue when using the node-amqp npm-library.
 
 It's also an EventEmitter, so you can initialize the connection like this:
