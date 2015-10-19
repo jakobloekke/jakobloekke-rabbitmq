@@ -7,9 +7,8 @@ RabbitMQ.exchanges = {};
 
 RabbitMQ.createConnection = function (options) {
     RabbitMQ.connection = amqp.createConnection(options);
-
     RabbitMQ.connection.on('error', function (err) {
-        throw new Meteor.Error(err);
+        console.log(error);
     });
 };
 
