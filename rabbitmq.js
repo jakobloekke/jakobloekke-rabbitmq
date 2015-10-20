@@ -8,7 +8,7 @@ RabbitMQ.exchanges = {};
 RabbitMQ.createConnection = function (options) {
     RabbitMQ.connection = amqp.createConnection(options);
     RabbitMQ.connection.on('error', function (err) {
-        console.log(error);
+        console.log(err);
     });
 };
 
