@@ -5,13 +5,24 @@ RabbitMQ = _objectAsEventEmitter({});
 RabbitMQ.connection = null;
 RabbitMQ.exchanges = {};
 
-RabbitMQ.createConnection = function (options) {
-    RabbitMQ.connection = amqp.createConnection(options);
-    RabbitMQ.connection.on('error', function (err) {
-        console.log(err);
-    });
+RabbitMQ.ensureConnection = function (options) {
+    if (options && !RabbitMQ.connection) {
+        RabbitMQ.connection = amqp.createConnection(options);
+
+        RabbitMQ.connection.on('ready', function () {
+            RabbitMQ.emit('ready');
+        });
+
+        RabbitMQ.connection.on('error', function (err) {
+            RabbitMQ.emit('error', err);
+        });
+    }
 };
 
+/**
+ * @deprecated use ensureConnection instead
+ */
+RabbitMQ.createConnection = RabbitMQ.ensureConnection;
 
 /**
  * http://stackoverflow.com/a/29722360/245540
