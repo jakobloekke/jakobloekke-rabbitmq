@@ -1,5 +1,6 @@
 var amqp = Npm.require('amqp'),
-    EventEmitter = Npm.require('events').EventEmitter;
+    EventEmitter = Npm.require('events').EventEmitter,
+    waitUntil = Npm.require('wait-until');
 
 RabbitMQ = _objectAsEventEmitter({});
 RabbitMQ.connection = null;
@@ -16,6 +17,17 @@ RabbitMQ.ensureConnection = function (options) {
         RabbitMQ.connection.on('error', function (err) {
             RabbitMQ.emit('error', err);
         });
+    } else {
+        // We need to wait until the connection has become ready to re-emit the ready event
+        waitUntil()
+            .interval(500)
+            .times(10)
+            .condition(function () {
+                return (RabbitMQ.connection.readyEmitted ? true : false);
+            })
+            .done(function () {
+                RabbitMQ.emit('ready');
+            });
     }
 };
 

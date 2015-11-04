@@ -1,6 +1,6 @@
 Package.describe({
     name: 'jakobloekke:rabbitmq',
-    version: '0.1.0',
+    version: '0.1.1',
     // Brief, one-line summary of the package.
     summary: 'node-amqp wrapped as an EventEmitter',
     // URL to the Git repository containing the source code for this package.
@@ -11,7 +11,8 @@ Package.describe({
 });
 
 Npm.depends({
-    "amqp": "0.2.4"
+    "amqp": "0.2.4",
+    "wait-until": "0.0.2"
 });
 
 Package.onUse(function (api) {
