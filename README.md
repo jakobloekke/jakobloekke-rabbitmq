@@ -1,5 +1,5 @@
 # jakobloekke-rabbitmq
-AMQP-client for Meteor.js
+AMQP-client for Meteor.js, based on [https://github.com/postwait/node-amqp](https://github.com/postwait/node-amqp).
 
 Exposes a global ```RabbitMQ``` object that you can interact with.
 
@@ -21,23 +21,29 @@ It's also an EventEmitter, so you can initialize the connection like this:
         RabbitMQ.ensureConnection(options);
     });
 
-And then elsewhere in your application you can wait for the initialization like this:
+And then somewhere in your application you can wait for the initialization like this:
 
     RabbitMQ.on('ready', function () {
-        RabbitMQ.connection.exchange('Project.E.ExchangeName', {type: 'topic'}, function (exchange) {
-            RabbitMQ.exchanges.ExchangeName = exchange;
-            RabbitMQ.emit('ExchangeName is ready');
+        RabbitMQ.connection.exchange('Project.E.MyExchange', {type: 'topic'}, function (exchange) {
+            RabbitMQ.exchanges.MyExchange = exchange;
+            RabbitMQ.emit('MyExchange is ready');
         });
     });
 
-    RabbitMQ.on('ExchangeName is ready', function () {
-        RabbitMQ.connection.queue('Project.Q.QueueName', function (q) {
-            console.log('Connected to new queue:', q.name);
-
-            q.bind(RabbitMQ.exchanges.ExchangeName, function (q) {
+    // When the exchange is ready, you can work with it
+    RabbitMQ.on('MyExchange is ready', function () {
+    
+        // Sending messages
+        RabbitMQ.exchanges.MyExchange.publish('some_routing_key', {greeting: 'Hello world!'});
+    
+        // Receiving messages
+        RabbitMQ.connection.queue('Project.Q.MyQueue', function (q) {
+            q.bind(RabbitMQ.exchanges.MyExchange, function (q) {
                 q.subscribe({ack: true}, function (message) {
-                    // your code
-                    q.shift(); // If ack: true
+                    
+                    // your code for handling incoming messages goes here ...
+                    
+                    q.shift(); // Only necessary if {ack: true}
                 });
             });
         });
@@ -49,8 +55,3 @@ Errors are also emitted:
         console.log(err);
     });
     
-    
-# Change history
-
-- 0.1.1: Stabilize handling of multiple calls to ```RabbitMQ.ensureConnection()```.
-- 0.1.0: Deprecate ```RabbitMQ.createConnection()``` in favour of ```RabbitMQ.ensureConnection()``` which is a more precise name. Emit our own 'ready' event instead of having client code rely on the underlying connection object's own ready-event, which was rather smelly.
